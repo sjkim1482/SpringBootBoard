@@ -23,7 +23,36 @@ Ext.define('ExtJSBoard.view.main.Main', {
 		split : true,
 		flex : 1,
 		border : 1,
-		title : '게시판'
+		title : '게시판',
+		items : [{
+			xtype : 'button',
+			text : '로그아웃',
+			handler : function(btn){
+				Ext.Ajax.request({
+						url : 'http://localhost/board/logout',
+						method : 'POST',
+					
+						success : function(response){
+							var check = Ext.decode(response.responseText).insertCnt;
+							console.log("check",check);
+							if(check == 1){
+//								btn.up("window").close();
+//								Ext.widget("main");
+								var page = btn.up("container");
+								page.removeAll(true);
+								page.add(Ext.apply({
+								xtype : 'postList'
+								}));
+							}else{
+								alert("게시글 생성오류");
+							}
+						},
+						failure : function(response){
+							console.log(response);
+						}
+					});
+			}
+		}]
 	},{
 		xtype : 'panel',
 		split : true,

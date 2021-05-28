@@ -83,7 +83,7 @@
             )
 		START WITH pre_post_no IS NULL
 		CONNECT BY PRIOR post_no = pre_post_no
-		ORDER SIBLINGS BY reg_dt ASC)
+		ORDER SIBLINGS BY reg_dt DESC)
 		WHERE rn BETWEEN (#{page}-1) * #{pageSize} + 1 AND #{page} * #{pageSize}
 		<!-- SELECT LPAD((' '), 8*(LEVEL-1)) || title title, -->
 <!-- 		SELECT DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) || -->

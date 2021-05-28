@@ -16,8 +16,30 @@ Ext.define('ExtJSBoard.Application', {
     },
 	
 	launch : function(){
+		Ext.Ajax.request({
+			url : 'http://localhost/board/sessionCheck',
+			method : 'post',
+			success : function(res){
+				
+				var loginCheck = Ext.decode(res.responseText).S_USER;
+				
+				console.log("loginCheck" ,loginCheck);
+				if(loginCheck == null){
+					Ext.widget("login");
+				}else{
+					if(loginCheck.admin_code==1){
+						Ext.widget("adminMain");
+					}else{
+						Ext.widget("main");
+					}
+				}
+				
+			}
+		})
+		
+		
 		//둘중 하나 사용
-		Ext.widget("login");
+//		Ext.widget("login");
 //		Ext.create("ExtJSBoard.view.login.Login");
 	},
 	
