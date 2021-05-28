@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+  <typeAliases>
+  	<typeAlias type="com.nsetec.board.model.BoardVO" alias="boardVo" />
+  	<typeAlias type="com.nsetec.board.model.CommentsVO" alias="commentsVo" />
+  	<typeAlias type="com.nsetec.board.model.FileVO" alias="fileVo" />
+  	<typeAlias type="com.nsetec.board.model.PostVO" alias="postVo" />
+  	<typeAlias type="com.nsetec.board.model.UserVO" alias="userVo" />
+  	<typeAlias type="com.nsetec.board.model.PageVo" alias="pageVo" />
+  </typeAliases>
+
+
+  <mappers>
+	  <mapper resource="com/nsetec/mappers/board.xml"/>
+  </mappers>
+  
+  
+</configuration>

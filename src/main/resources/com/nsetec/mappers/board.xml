@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+	<!-- 로그인 아이디 비밀번호 일치 확인 -->
+	<select id="checkLogin" parameterType="userVo" resultType="int">
+		SELECT COUNT(*) COUNT
+		FROM B_USER
+		WHERE user_id = #{user_id} AND pass =
+		#{pass}
+	</select>
+
+	<!-- 유저 정보 -->
+	<select id="selectUser" parameterType="String"
+		resultType="userVo">
+		SELECT *
+		FROM b_user
+		WHERE user_id = #{user_id}
+	</select>
+
+	<!-- 게시판등록 -->
+	<insert id="insertBoard" parameterType="boardVo">
+		INSERT INTO
+		board(BOARD_NO
+		,BOARD_NM
+		,CHECK_ON)
+		VALUES(board_seq.nextVal
+		,#{board_nm}
+		,#{check_on})
+	</insert>
+
+	<!-- 게시판 전체목록조회 -->
+	<select id="selectBoardList" resultType="boardVo">
+		SELECT board_no,
+		board_nm, check_on
+		FROM board
+	</select>
+
+	<!-- 사용자 조회 -->
+	<select id="selectUserList" resultType="userVo">
+		SELECT *
+		FROM b_user
+	</select>
+
+	<insert id="insertPost" parameterType="postVo">
+		INSERT INTO
+		post(POST_NO
+		,TITLE
+		,CONT
+		,REG_DT
+		,VIEWS
+		,DEL_CODE
+		,BOARD_NO
+		,USER_ID
+		,PRE_POST_NO)
+		VALUES(post_seq.nextVal
+		,#{title }
+		,#{cont }
+		,sysdate
+		,0
+		,1
+		,#{board_no }
+		,#{user_id}
+		,null)
+	</insert>
+
+	<!-- 게시글 전체조회 -->
+	<select id="selectPostList" parameterType="pageVo" resultType="postVo">
+		SELECT *
+        FROM (
+        SELECT DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) ||'->' || title) title,post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no,ROWNUM rn, LEVEL workLevel
+		FROM
+            (SELECT ROWNUM rn,a.*
+            FROM
+                (SELECT title, post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no
+                FROM post
+                WHERE board_no = #{board_no}
+                ORDER BY post_no DESC
+            ) a
+            ORDER by rownum
+            )
+		START WITH pre_post_no IS NULL
+		CONNECT BY PRIOR post_no = pre_post_no
+		ORDER SIBLINGS BY reg_dt ASC)
+		WHERE rn BETWEEN (#{page}-1) * #{pageSize} + 1 AND #{page} * #{pageSize}
+		<!-- SELECT LPAD((' '), 8*(LEVEL-1)) || title title, -->
+<!-- 		SELECT DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) || -->
+<!-- 		'->' || title) title, -->
+<!-- 		post_no, -->
+<!-- 		cont, -->
+<!-- 		reg_dt, -->
+<!-- 		views, -->
+<!-- 		del_code, -->
+<!-- 		board_no, -->
+<!-- 		user_id, -->
+<!-- 		pre_post_no, -->
+<!-- 		ROWNUM rn, -->
+<!-- 		LEVEL workLevel -->
+<!-- 		FROM -->
+<!-- 		(SELECT ROWNUM rn, -->
+<!-- 		a.* -->
+<!-- 		FROM -->
+<!-- 		(SELECT -->
+<!-- 		title, -->
+<!-- 		post_no, -->
+<!-- 		cont, -->
+<!-- 		reg_dt, -->
+<!-- 		views, -->
+<!-- 		del_code, -->
+<!-- 		board_no, -->
+<!-- 		user_id, -->
+<!-- 		pre_post_no -->
+<!-- 		FROM post -->
+<!-- 		WHERE board_no = #{board_no} -->
+<!-- 		ORDER BY -->
+<!-- 		post_no DESC -->
+<!-- 		) a -->
+<!-- 		) -->
+<!-- 		WHERE rn BETWEEN (#{page}-1) * #{pageSize} + 1 AND -->
+<!-- 		#{page} * #{pageSize} -->
+<!-- 		START WITH pre_post_no IS NULL -->
+<!-- 		CONNECT BY PRIOR -->
+<!-- 		post_no = pre_post_no -->
+<!-- 		ORDER SIBLINGS BY reg_dt ASC -->
+	</select>
+
+	<!-- 게시글 전체개수 -->
+	<select id="postListCnt" resultType="int" parameterType="pageVo">
+		SELECT
+		COUNT(*)
+		FROM post
+		WHERE board_no = #{board_no}
+	</select>
+
+	<!-- 게시글 조회 -->
+	<select id="postView" parameterType="int" resultType="postVo">
+		SELECT
+		post_no
+		,title
+		,cont
+		,reg_dt
+		,views
+		,del_code
+		,board_no
+		,user_id
+		,pre_post_no
+		FROM post
+		WHERE post_no = #{post_no}
+	</select>
+
+	<!-- 게시글 조회수 증가 -->
+	<update id="viewsPlus" parameterType="int">
+		UPDATE post SET views =
+		views + 1
+		WHERE post_no = #{post_no}
+	</update>
+
+	<!-- 답글등록 -->
+	<insert id="insertReply" parameterType="postVo">
+		INSERT INTO
+		post(POST_NO
+		,TITLE
+		,CONT
+		,REG_DT
+		,VIEWS
+		,DEL_CODE
+		,BOARD_NO
+		,USER_ID
+		,PRE_POST_NO)
+		VALUES(post_seq.nextVal
+		,#{title }
+		,#{cont }
+		,sysdate
+		,0
+		,1
+		,#{board_no }
+		,#{user_id}
+		,#{pre_post_no})
+	</insert>
+
+	<!-- 유저 등록 -->
+	<insert id="registUser" parameterType="userVo">
+		INSERT
+
+		INTO b_user
+		(USER_ID
+		,PASS
+		,USER_NAME
+		,AGE
+		,GENDER
+		,ADMIN_CODE)
+		
+		VALUES
+
+		(#{user_id }
+		,#{pass }
+		,#{user_name}
+		,#{age }
+		,#{gender }
+		,0)
+	</insert>
+
+	<!-- 아이디 중복확인 -->
+	<select id="checkUserId" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM b_user
+		WHERE user_id = #{user_id}
+	</select>
+
+	<!-- 파일업로드 -->
+	<insert id="insertFile" parameterType="fileVo">
+		INSERT INTO ATTACH_FILE
+		(FILE_NO
+		,FILE_NM
+		,FILE_ROUTE
+		,DEL_CODE
+		,POST_NO)
+		
+		VALUES
+		(file_seq.nextVal
+		,#{file_nm }
+		,#{file_route}
+		,1
+		,#{post_no})
+	</insert>
+
+	<select id="maxPostno" resultType="int">
+		SELECT MAX(post_no)
+		FROM post
+	</select>
+
+
+
+
+
+
+
+
+</mapper>
+
+
+
+
+
+
