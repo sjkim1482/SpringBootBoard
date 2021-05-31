@@ -12,9 +12,12 @@
 //    }
 var board_no;
 var page_no;
+var post;
+var maindata;
 Ext.define('ExtJSBoard.view.main.Main', {
     extend: 'Ext.container.Viewport',
     xtype: 'main',
+    name : 'mainView1',
 	layout : 'border',
 	
 	items : [{
@@ -33,18 +36,18 @@ Ext.define('ExtJSBoard.view.main.Main', {
 						method : 'POST',
 					
 						success : function(response){
-							var check = Ext.decode(response.responseText).insertCnt;
-							console.log("check",check);
-							if(check == 1){
-//								btn.up("window").close();
-//								Ext.widget("main");
-								var page = btn.up("container");
-								page.removeAll(true);
-								page.add(Ext.apply({
-								xtype : 'postList'
-								}));
+							var logoutCheck = Ext.decode(response.responseText).logoutCheck;
+							console.log("logoutCheck",logoutCheck);
+							if(logoutCheck == 1){
+								console.log("container",btn.up("container").up("container"));
+								console.log("viewport",btn.up("viewport"));
+//								if(maindata == null){
+//									maindata = btn.up("container[name=mainView]");
+//								}
+								btn.up("container[name=mainView1]").removeAll();
+								Ext.widget("login");
 							}else{
-								alert("게시글 생성오류");
+								alert("로그아웃 오류");
 							}
 						},
 						failure : function(response){
@@ -66,13 +69,17 @@ Ext.define('ExtJSBoard.view.main.Main', {
 			xtype : 'treelist',
 			listeners : {
 				selectionchange : function(obj, record){
+					
 					console.log("진입!");
+					console.log("obj : ",obj._selection);
 					console.log("obj : ",obj._selection.data.id);
 					console.log("obj.data",obj._selection.data);
 					console.log("record",record);
 					board_no = obj._selection.data.id;
 					page_no = 1;
 					var centerPage = obj.up("viewport").down("component[region=center]");
+//					maindata = obj.up("container[name=mainView1]");
+//					console.log("maindata",maindata);
 					centerPage.removeAll(true);
 					centerPage.add({
 						xtype: 'postList'

@@ -70,7 +70,7 @@
 	<select id="selectPostList" parameterType="pageVo" resultType="postVo">
 		SELECT *
         FROM (
-        SELECT DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) ||'->' || title) title,post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no,ROWNUM rn, LEVEL workLevel
+        SELECT DECODE(del_code,1,(DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) ||'->' || title)),'삭제된 게시글입니다.') title,post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no,ROWNUM rn, LEVEL workLevel
 		FROM
             (SELECT ROWNUM rn,a.*
             FROM
@@ -230,12 +230,56 @@
 		SELECT MAX(post_no)
 		FROM post
 	</select>
+	
+	<!-- 게시글 삭제 -->
+	<update id="deletePost" parameterType="int">
+		UPDATE post SET del_code = 0
+		WHERE post_no = #{post_no}
+	</update>
 
+	<!-- 게시글 수정 -->
+	<update id="updatePost" parameterType="postVo">
+		UPDATE post SET title = #{title}, cont = #{cont}
+		WHERE post_no = #{post_no}
+	</update>
 
+	<!-- 댓글 등록 -->
+	<insert id="insertComment" parameterType="commentsVo">
+		INSERT INTO
+		comments
+		(COM_NO
+		,COM_CONT
+		,REG_DT
+		,DEL_CODE
+		,POST_NO
+		,USER_ID)
+		VALUES
+		(comments_seq.nextVal
+		,#{com_cont}
+		,SYSDATE
+		,1
+		,#{post_no }
+		,#{user_id})
+	</insert>
+	
+	<!-- 댓글조회 -->
+	<select id="selectCommentsList" parameterType="int" resultType="commentsVo">
+		SELECT 
+		com_no
+		,com_cont
+		,reg_dt
+		,del_code
+		,post_no
+		,user_id
+		FROM comments
+		WHERE post_no = #{post_no} AND del_code = 1
+	</select>
 
-
-
-
+	<!-- 댓글삭제 -->
+	<update id="deleteComments" parameterType="int">
+		UPDATE comments SET DEL_CODE = 0
+		WHERE com_no = #{com_no}
+	</update>
 
 
 </mapper>

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.nsetec.board.model.BoardVO;
+import com.nsetec.board.model.CommentsVO;
 import com.nsetec.board.model.FileVO;
 import com.nsetec.board.model.PageVo;
 import com.nsetec.board.model.PostVO;
@@ -90,7 +91,25 @@ public class BoardController {
 		return map;
 	}
 	
-
+	//로그아웃
+	@PostMapping("logout")
+	public Map<String, Object> logout(HttpServletRequest request, HttpSession session){
+		Map<String, Object> map = new HashMap<String, Object>();
+		request.getSession().invalidate();
+		
+		Object obj = request.getSession().getAttribute("S_USER");
+		
+		if(obj == null) {
+			map.put("logoutCheck", 1);
+		}else {
+			map.put("logoutCheck", 0);
+		}
+		
+		return map;
+		
+	}
+	
+	
 	
 	//게시판 생성
 	@PostMapping(path = "insertBoard")
@@ -128,7 +147,7 @@ public class BoardController {
 	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session,MultipartFile uploadFile, HttpServletRequest request, Model model) {
 		System.out.println("게시글 등록진입");
 //		List<MultipartFile> files = fileList.getFiles("uploadFile");
-		System.out.println(uploadFile.getOriginalFilename());
+//		System.out.println(uploadFile.getOriginalFilename());
 		UserVO userVo = (UserVO)(request.getSession().getAttribute("S_USER"));
 		postVo.setUser_id(userVo.getUser_id());
 		logger.debug("================================");
@@ -144,7 +163,9 @@ public class BoardController {
 		String filename = "";
 		//파일등록
 		FileVO attFileVo = new FileVO();
-		attFileVo.setPost_no(boardService.maxPostno());
+		int max_post_no = boardService.maxPostno();
+		map.put("max_post_no", max_post_no);
+		attFileVo.setPost_no(max_post_no);
 		if(insertCnt == 1) {
 			if(uploadFile!=null) {
 			
@@ -206,7 +227,7 @@ public class BoardController {
 	
 	//게시글 상세조회 postView
 	@PostMapping(path = "postView")
-	public Map<String, Object> postView(int post_no,HttpServletRequest request, Model model) {
+	public Map<String, Object> postView(int post_no,HttpServletRequest request,HttpSession session, Model model) {
 
 		logger.debug("================================");
 		logger.debug("게시글 상세조회 컨트롤러 접속");
@@ -215,6 +236,21 @@ public class BoardController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		PostVO postVo = boardService.postView(post_no);
 		map.put("post", postVo);
+		List<CommentsVO> commentsList = boardService.selectCommentsList(post_no);
+		map.put("commentsList", commentsList);
+		String user_id = postVo.getUser_id();
+		String s_user_id =  ((UserVO)request.getSession().getAttribute("S_USER")).getUser_id();
+		map.put("s_user_id", s_user_id);
+		
+		if(user_id.equals(s_user_id)) {
+			map.put("writerCheck", 1);
+		}else {
+			map.put("writerCheck", 0);
+		}
+		
+		
+		
+		
 //		model.addAttribute("post",postVo);
 //			UserVO userVo = (UserVO)request.getSession().getAttribute("S_USER");
 //			int writer = 0;
@@ -238,6 +274,8 @@ public class BoardController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int insertCnt = boardService.insertReply(postVo);
 		map.put("insertCnt", insertCnt);
+		int max_post_no = boardService.maxPostno();
+		map.put("max_post_no", max_post_no);
 //		model.addAttribute("insertCnt", insertCnt);
 		
 		return map;
@@ -278,7 +316,75 @@ public class BoardController {
 		return map;
 	}
 	
+	@PostMapping(path = "deletePost")
+	public Map<String, Object> deletePost(int post_no){
+		Map<String, Object> map = new HashMap<String, Object>();
+		logger.debug("================================");
+		logger.debug("게시글 삭제 컨트롤러 접속");
+		logger.debug("post_no : {}", post_no);
+		logger.debug("================================");
+		int deleteCheck = boardService.deletePost(post_no);
+		map.put("deleteCheck", deleteCheck);
+		
+		
+		return map;
+	}
 	
+	@GetMapping(path = "updatePost")
+	public Map<String,Object> updatePost(int post_no){
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		logger.debug("================================");
+		logger.debug("게시글 수정(GET) 컨트롤러 접속");
+		logger.debug("post_no : {}", post_no);
+		logger.debug("================================");
+		map.put("post", boardService.postView(post_no));
+		
+		
+		return map;
+	}
+	
+	@PostMapping(path = "updatePost")
+	public Map<String,Object> updatePost(PostVO postVo,HttpSession session,MultipartFile uploadFile, HttpServletRequest request){
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		logger.debug("================================");
+		logger.debug("게시글 수정(POST) 컨트롤러 접속");
+		logger.debug("postVo : {}", postVo);
+		logger.debug("================================");
+		map.put("updateCnt", boardService.updatePost(postVo));
+		
+		
+		return map;
+	}
+	
+	@PostMapping(path = "insertComment")
+	public Map<String,Object> insertComment(CommentsVO commentsVO,HttpSession session, HttpServletRequest request){
+		Map<String,Object> map = new HashMap<String, Object>();
+		commentsVO.setUser_id(((UserVO)request.getSession().getAttribute("S_USER")).getUser_id());
+		logger.debug("================================");
+		logger.debug("댓글등록 컨트롤러 접속");
+		logger.debug("commentsVO : {}", commentsVO);
+		logger.debug("================================");
+		map.put("insertCnt", boardService.insertComment(commentsVO));
+		
+		
+		return map;
+	}
+	
+	@PostMapping(path = "deleteComments")
+	public Map<String,Object> deleteComment(int com_no){
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		logger.debug("================================");
+		logger.debug("댓글삭제 컨트롤러 접속");
+		logger.debug("com_no : {}", com_no);
+		logger.debug("================================");
+		map.put("deleteCnt", boardService.deleteComments(com_no));
+		
+		
+		return map;
+	}
 	
 	
 }

@@ -21,7 +21,32 @@ Ext.define('ExtJSBoard.view.main.AdminMain', {
 		split : true,
 		flex : 1,
 		border : 1,
-		title : '게시판'
+		title : '게시판',
+		items : [{
+			xtype : 'button',
+			text : '로그아웃',
+			handler : function(btn){
+				Ext.Ajax.request({
+						url : 'http://localhost/board/logout',
+						method : 'POST',
+					
+						success : function(response){
+							var logoutCheck = Ext.decode(response.responseText).logoutCheck;
+							console.log("logoutCheck",logoutCheck);
+							if(logoutCheck == 1){
+								btn.up("adminMain").removeAll();
+								Ext.widget("login");
+								return false;
+							}else{
+								alert("로그아웃 오류");
+							}
+						},
+						failure : function(response){
+							console.log(response);
+						}
+					});
+			}
+		}]
 	},{
 		xtype : 'panel',
 		split : true,

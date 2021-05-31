@@ -53,7 +53,8 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 					var cont = btn.up('form').down("component[name=cont]").value;
 					var uploadFile = btn.up('form').down("component[name=uploadFile]").value;
 					console.log("uploadFile",uploadFile);
-					frm.submit({
+//					frm.submit({
+					Ext.Ajax.request({
 						url: 'http://localhost/board/insertPost',
 						method : "post",
 						params : {
@@ -61,13 +62,15 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 							title : title,
 							cont : cont,
 							},
-						success : function(fp, response){ 
+//						success : function(fp, response){ 
+						success : function(response){ 
 //						var jsonResult = Ext.JSON.decode(res.response.responseText);
 //						 var msg = "업로드된 파일명<br/>"; 
 //						 Ext.each(jsonResult.fileList,function(obj){ msg += obj.fileName+","; }); msg = msg.substring(0,msg.length-1); Ext.MessageBox.show({ title : '업로드된파일명', msg : msg, buttons : Ext.MessageBox.YES, icon : Ext.MessageBox.INFO }); //한번 submit 처리가 되면 filefield는 초기화 되므로 //다시 filefield에 multiple 속성 설정
 //						  panel.down("filefield").fileInputEl.set({ multiple:'multiple' });
-						alert("성공!");
+//						alert("성공!");
 						var check = Ext.decode(response.responseText).insertCnt;
+						post_no = Ext.decode(response.responseText).max_post_no;
 							console.log("check",check);
 							if(check == 1){
 								alert("게시글이 생성되었습니다.");
@@ -76,7 +79,7 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 								var page = btn.up("viewport").down("component[region=center]");
 								page.removeAll(true);
 								page.add(Ext.apply({
-									xtype : 'postList'
+									xtype : 'postView'
 								}));
 							}else{
 								alert("게시글 생성오류");

@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.nsetec.board.model.BoardVO;
+import com.nsetec.board.model.CommentsVO;
 import com.nsetec.board.model.FileVO;
 import com.nsetec.board.model.PageVo;
 import com.nsetec.board.model.PostVO;
@@ -117,6 +118,36 @@ public class BoardDao implements BoardDaoI {
 	public int maxPostno() {
 		// TODO Auto-generated method stub
 		return template.selectOne("board.maxPostno");
+	}
+
+	@Override
+	public int deletePost(int post_no) {
+		// TODO Auto-generated method stub
+		return template.update("board.deletePost",post_no);
+	}
+
+	@Override
+	public int updatePost(PostVO postVO) {
+		// TODO Auto-generated method stub
+		return template.update("board.updatePost",postVO);
+	}
+
+	@Override
+	public int insertComment(CommentsVO commentsVO) {
+		// TODO Auto-generated method stub
+		return template.insert("board.insertComment",commentsVO);
+	}
+
+	@Override
+	public List<CommentsVO> selectCommentsList(int post_no) {
+		// TODO Auto-generated method stub
+		return template.selectList("board.selectCommentsList",post_no);
+	}
+
+	@Override
+	public int deleteComments(int com_no) {
+		// TODO Auto-generated method stub
+		return template.update("board.deleteComments", com_no);
 	}
 	
 	

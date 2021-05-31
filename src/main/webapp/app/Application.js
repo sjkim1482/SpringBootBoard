@@ -5,9 +5,11 @@
  */
 Ext.define('ExtJSBoard.Application', {
     extend: 'Ext.app.Application',
-
+	
+	xtype : 'ExtJSBoard',
+	
     name: 'ExtJSBoard',
-
+	
     quickTips: false,
     platformConfig: {
         desktop: {

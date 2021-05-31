@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.nsetec.board.model.BoardVO;
+import com.nsetec.board.model.CommentsVO;
 import com.nsetec.board.model.FileVO;
 import com.nsetec.board.model.PageVo;
 import com.nsetec.board.model.PostVO;
@@ -37,4 +38,15 @@ public interface BoardServiceI {
 	int insertFile(FileVO fileVo);
 	//최근 게시글 번호
 	int maxPostno();
+	//게시글 삭제
+	int deletePost(int post_no);
+	//게시글 수정
+	int updatePost(PostVO postVO);
+	//댓글 등록
+	int insertComment(CommentsVO commentsVO);
+	//댓글 조회
+	List<CommentsVO> selectCommentsList(int post_no);
+	//댓글 삭제
+	int deleteComments(int com_no);
+	
 }

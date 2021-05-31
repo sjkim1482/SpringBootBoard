@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.nsetec.board.dao.BoardDao;
 import com.nsetec.board.dao.BoardDaoI;
 import com.nsetec.board.model.BoardVO;
+import com.nsetec.board.model.CommentsVO;
 import com.nsetec.board.model.FileVO;
 import com.nsetec.board.model.PageVo;
 import com.nsetec.board.model.PostVO;
@@ -122,6 +123,36 @@ private static final Logger logger = LoggerFactory.getLogger(BoardService.class)
 	public int maxPostno() {
 		// TODO Auto-generated method stub
 		return boardDao.maxPostno();
+	}
+
+	@Override
+	public int deletePost(int post_no) {
+		// TODO Auto-generated method stub
+		return boardDao.deletePost(post_no);
+	}
+
+	@Override
+	public int updatePost(PostVO postVO) {
+		// TODO Auto-generated method stub
+		return boardDao.updatePost(postVO);
+	}
+
+	@Override
+	public int insertComment(CommentsVO commentsVO) {
+		// TODO Auto-generated method stub
+		return boardDao.insertComment(commentsVO);
+	}
+
+	@Override
+	public List<CommentsVO> selectCommentsList(int post_no) {
+		// TODO Auto-generated method stub
+		return boardDao.selectCommentsList(post_no);
+	}
+
+	@Override
+	public int deleteComments(int com_no) {
+		// TODO Auto-generated method stub
+		return boardDao.deleteComments(com_no);
 	}
 	
 }
