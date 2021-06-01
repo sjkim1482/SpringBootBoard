@@ -154,5 +154,11 @@ private static final Logger logger = LoggerFactory.getLogger(BoardService.class)
 		// TODO Auto-generated method stub
 		return boardDao.deleteComments(com_no);
 	}
+
+	@Override
+	public List<PostVO> searchPostList(PageVo pageVo) {
+		// TODO Auto-generated method stub
+		return boardDao.searchPostList(pageVo);
+	}
 	
 }

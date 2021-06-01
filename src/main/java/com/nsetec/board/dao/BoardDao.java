@@ -149,6 +149,12 @@ public class BoardDao implements BoardDaoI {
 		// TODO Auto-generated method stub
 		return template.update("board.deleteComments", com_no);
 	}
+
+	@Override
+	public List<PostVO> searchPostList(PageVo pageVo) {
+		// TODO Auto-generated method stub
+		return template.selectList("board.searchPostList", pageVo);
+	}
 	
 	
 }

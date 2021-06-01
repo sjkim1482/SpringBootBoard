@@ -211,7 +211,20 @@ public class BoardController {
 	
 	//게시글 전체조회
 	@PostMapping(path = "selectPostList")
-	public Map<String, Object> selectPostList(PageVo pageVo, Model model) {
+	public Map<String, Object> selectPostList(PageVo pageVo,String pageSizeStr, String searchCheckStr, String searchStr) {
+
+		
+		if("".equals(pageSizeStr)) {
+			pageVo.setPageSize(10);
+		}else {
+			pageVo.setPageSize(Integer.parseInt(pageSizeStr));
+		}
+		
+		if("".equals(searchCheckStr)) {
+			pageVo.setSearchCheck(3);
+		}else {
+			pageVo.setSearchCheck(Integer.parseInt(searchCheckStr));
+		}
 
 		logger.debug("================================");
 		logger.debug("게시글 조회 컨트롤러 접속");
@@ -219,7 +232,6 @@ public class BoardController {
 		logger.debug("postList : {}", boardService.selectPostList(pageVo));
 		logger.debug("================================");
 		
-		model.addAllAttributes(boardService.selectPostList(pageVo));
 		
 		return boardService.selectPostList(pageVo);
 	}
@@ -381,6 +393,20 @@ public class BoardController {
 		logger.debug("com_no : {}", com_no);
 		logger.debug("================================");
 		map.put("deleteCnt", boardService.deleteComments(com_no));
+		
+		
+		return map;
+	}
+	
+	@GetMapping(path = "searchPostList")
+	public Map<String,Object> searchPostList(PageVo pageVo){
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		logger.debug("================================");
+		logger.debug("게시글 조건검색 컨트롤러 접속");
+		logger.debug("pageVo : {}", pageVo);
+		logger.debug("================================");
+		map.put("postList", boardService.searchPostList(pageVo));
 		
 		
 		return map;

@@ -77,6 +77,10 @@ Ext.define('ExtJSBoard.view.main.Main', {
 					console.log("record",record);
 					board_no = obj._selection.data.id;
 					page_no = 1;
+					pageSizeStr = "";
+					searchCheckStr  = "";
+					searchStr  = "";
+					
 					var centerPage = obj.up("viewport").down("component[region=center]");
 //					maindata = obj.up("container[name=mainView1]");
 //					console.log("maindata",maindata);

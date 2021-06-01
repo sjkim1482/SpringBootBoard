@@ -48,5 +48,6 @@ public interface BoardServiceI {
 	List<CommentsVO> selectCommentsList(int post_no);
 	//댓글 삭제
 	int deleteComments(int com_no);
-	
+	//게시글 조검검색
+	List<PostVO> searchPostList(PageVo pageVo);
 }

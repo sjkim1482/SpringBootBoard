@@ -76,7 +76,15 @@
             FROM
                 (SELECT title, post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no
                 FROM post
-                WHERE board_no = #{board_no}
+                WHERE board_no = #{board_no} 
+                <choose>
+                	<when test="searchCheck == 0">
+                		AND title LIKE '%' || #{searchStr} || '%'
+                	</when>
+                	<when test="searchCheck == 1">
+                		AND user_id LIKE '%' || #{searchStr} || '%'
+                	</when>
+                </choose>
                 ORDER BY post_no DESC
             ) a
             ORDER by rownum
@@ -132,6 +140,14 @@
 		COUNT(*)
 		FROM post
 		WHERE board_no = #{board_no}
+		<choose>
+        	<when test="searchCheck == 0">
+        		AND title LIKE '%' || #{searchStr} || '%'
+        	</when>
+        	<when test="searchCheck == 1">
+        		AND user_id LIKE '%' || #{searchStr} || '%'
+        	</when>
+        </choose>
 	</select>
 
 	<!-- 게시글 조회 -->
@@ -281,7 +297,7 @@
 		WHERE com_no = #{com_no}
 	</update>
 
-
+	
 </mapper>
 
 
