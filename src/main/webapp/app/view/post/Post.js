@@ -27,7 +27,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 			console.log('searchStr',searchStr);
 			
 			Ext.Ajax.request({
-				url : 'http://localhost/board/selectPostList',
+				url : '/board/selectPostList',
 				method : 'POST',
 				params : {
 					board_no : board_no, 
@@ -47,8 +47,19 @@ Ext.define('ExtJSBoard.view.post.Post', {
 					var postList = Ext.decode(response.responseText).postList;
 					console.log("store", store);
 					console.log("userList", store.loadData(result.postList));
+					
+					for(idx in postList){
+						var level = postList[idx].postLevel;
+						for(let i = 2; i<=level; i++){
+							postList[idx].title = "RE: "+postList[idx].title
+						}
+					}
+					
+					
+					
 					// 데이터를 배열로 넣을 때
-					store.loadData(result.postList);
+//					store.loadData(result.postList);
+					store.loadData(postList);
 					
 //					
 					

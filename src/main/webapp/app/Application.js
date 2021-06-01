@@ -19,7 +19,7 @@ Ext.define('ExtJSBoard.Application', {
 	
 	launch : function(){
 		Ext.Ajax.request({
-			url : 'http://localhost/board/sessionCheck',
+			url : '/board/sessionCheck',
 			method : 'post',
 			success : function(res){
 				

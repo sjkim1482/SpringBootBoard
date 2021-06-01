@@ -56,5 +56,12 @@ public interface BoardDaoI{
 	int deleteComments(int com_no);
 	//게시글 조검검색
 	List<PostVO> searchPostList(PageVo pageVo);
-	
+	//게시판 전체목록조회(관리자용)
+	List<BoardVO> boardListView();
+	//게시판 활성, 비활성
+	int updateBoard(BoardVO boardVo);
+	//첨부파일 전체조회
+	List<FileVO> selectFileList(int post_no);
+	//첨부파일 개별조회
+	FileVO selectFile(int file_no);
 }

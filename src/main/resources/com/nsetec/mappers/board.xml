@@ -31,12 +31,28 @@
 		,#{check_on})
 	</insert>
 
-	<!-- 게시판 전체목록조회 -->
+	<!-- 게시판 전체목록조회(회원용) -->
 	<select id="selectBoardList" resultType="boardVo">
 		SELECT board_no,
 		board_nm, check_on
 		FROM board
+		WHERE check_on = 1
+		ORDER BY board_no
 	</select>
+	
+	<!-- 게시판 전체목록조회(관리자용)-->
+	<select id="boardListView" resultType="boardVo">
+		SELECT board_no,
+		board_nm, check_on
+		FROM board
+		ORDER BY board_no
+	</select>
+	
+	<!-- 게시판 활성, 비활성 -->
+	<update id="updateBoard" parameterType="boardVo">
+		UPDATE board SET check_on = #{check_on}
+		WHERE board_no = #{board_no}
+	</update>
 
 	<!-- 사용자 조회 -->
 	<select id="selectUserList" resultType="userVo">
@@ -44,6 +60,7 @@
 		FROM b_user
 	</select>
 
+	<!-- 게시글 등록 -->
 	<insert id="insertPost" parameterType="postVo">
 		INSERT INTO
 		post(POST_NO
@@ -70,7 +87,7 @@
 	<select id="selectPostList" parameterType="pageVo" resultType="postVo">
 		SELECT *
         FROM (
-        SELECT DECODE(del_code,1,(DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) ||'->' || title)),'삭제된 게시글입니다.') title,post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no,ROWNUM rn, LEVEL workLevel
+        SELECT DECODE(del_code,1,(DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) || title)),'삭제된 게시글입니다.') title,post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no,ROWNUM rn, LEVEL postLevel
 		FROM
             (SELECT ROWNUM rn,a.*
             FROM
@@ -296,8 +313,60 @@
 		UPDATE comments SET DEL_CODE = 0
 		WHERE com_no = #{com_no}
 	</update>
-
+	<!-- 첨부파일 전체조회 -->
+	<select id="selectFileList" parameterType="int" resultType="fileVo">
+		SELECT 
+		file_no
+		,file_nm
+		,file_route
+		,del_code
+		,post_no
+		FROM attach_file
+		WHERE post_no = #{post_no}
+	</select>
 	
+	<!-- 첨부파일 개별조회 -->
+	<select id="selectFile" parameterType="int" resultType="fileVo">
+		SELECT
+		file_no
+		,file_nm
+		,file_route
+		,del_code
+		,post_no
+		FROM attach_file
+		WHERE file_no = #{file_no}
+	</select>
+	
+
+	<!-- 게시글 조건검색 -->
+<!-- 	<select id="searchPostList" parameterType="pageVo" resultType="postVo"> -->
+<!-- 		SELECT * -->
+<!--         FROM ( -->
+<!--         SELECT DECODE(del_code,1,(DECODE(pre_post_no, null, title, LPAD((' '), 8*(LEVEL-1)) ||'->' || title)),'삭제된 게시글입니다.') title,post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no,ROWNUM rn, LEVEL workLevel -->
+<!-- 		FROM -->
+<!--             (SELECT ROWNUM rn,a.* -->
+<!--             FROM -->
+<!--                 (SELECT title, post_no,cont,reg_dt,views,del_code,board_no,user_id,pre_post_no -->
+<!--                 FROM post -->
+<!--                 WHERE board_no = #{board_no} AND -->
+<!--                 <choose> -->
+<!--                 	<when test="#{searchCheck} == 0"> -->
+<!--                 		title = '%' || #{searchStr} || '%' -->
+<!--                 	</when> -->
+<!--                 	<when test="#{searchCheck} == 1"> -->
+<!--                 		user_id = '%' || #{searchStr} || '%' -->
+<!--                 	</when> -->
+<!--                 </choose> -->
+<!--                 ORDER BY post_no DESC -->
+<!--             ) a -->
+<!--             ORDER by rownum -->
+<!--             ) -->
+<!-- 		START WITH pre_post_no IS NULL -->
+<!-- 		CONNECT BY PRIOR post_no = pre_post_no -->
+<!-- 		ORDER SIBLINGS BY reg_dt DESC) -->
+<!-- 		WHERE rn BETWEEN (#{page}-1) * #{pageSize} + 1 AND #{page} * #{pageSize} -->
+<!-- 	</select> -->
+
 </mapper>
 
 

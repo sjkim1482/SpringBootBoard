@@ -33,7 +33,7 @@ Ext.define('ExtJSBoard.view.post.ReplyPost', {
 
 
 			Ext.Ajax.request({
-				url: 'http://localhost/board/insertReply',
+				url: '/board/insertReply',
 				method: 'POST',
 				params: {
 					board_no: board_no,

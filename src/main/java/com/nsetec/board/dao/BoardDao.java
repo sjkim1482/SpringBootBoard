@@ -155,6 +155,30 @@ public class BoardDao implements BoardDaoI {
 		// TODO Auto-generated method stub
 		return template.selectList("board.searchPostList", pageVo);
 	}
+
+	@Override
+	public List<BoardVO> boardListView() {
+		// TODO Auto-generated method stub
+		return template.selectList("board.boardListView");
+	}
+
+	@Override
+	public int updateBoard(BoardVO boardVo) {
+		// TODO Auto-generated method stub
+		return template.update("board.updateBoard", boardVo);
+	}
+
+	@Override
+	public List<FileVO> selectFileList(int post_no) {
+		// TODO Auto-generated method stub
+		return template.selectList("board.selectFileList", post_no);
+	}
+
+	@Override
+	public FileVO selectFile(int file_no) {
+		// TODO Auto-generated method stub
+		return template.selectOne("board.selectFile",file_no);
+	}
 	
 	
 }

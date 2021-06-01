@@ -33,12 +33,14 @@ Ext.define('ExtJSBoard.view.login.Login', {
 		items : [{
 			xtype : 'textfield',
 			name : 'user_id',
-			fieldLabel : '아이디'
+			fieldLabel : '아이디',
+			value : 'ksj0926'
 		},{
 			xtype : 'textfield',
 			name : 'pass',
 			inputType : 'password',
-			fieldLabel : '비밀번호'
+			fieldLabel : '비밀번호',
+			value : '1234'
 		},{
 			xtype : 'button',
 			width : 275,
@@ -47,7 +49,7 @@ Ext.define('ExtJSBoard.view.login.Login', {
 				var user_id = btn.up('window').down("component[name=user_id]").value;
 				var pass = btn.up('window').down("component[name=pass]").value;
 				Ext.Ajax.request({
-					url : 'http://localhost/board/checkLogin',
+					url : '/board/checkLogin',
 					method : 'POST',
 					params : {
 						user_id : user_id,
@@ -140,7 +142,7 @@ Ext.define('ExtJSBoard.view.login.Login', {
 		//						
 								
 								Ext.Ajax.request({
-									url : 'http://localhost/board/checkUserId',
+									url : '/board/checkUserId',
 									method : 'POST',
 									params : {
 										user_id : user_id
@@ -252,7 +254,7 @@ Ext.define('ExtJSBoard.view.login.Login', {
 							return false;
 						}
 						Ext.Ajax.request({
-							url : 'http://localhost/board/registUser',
+							url : '/board/registUser',
 							method : 'POST',
 							params : {
 								user_id : user_id,

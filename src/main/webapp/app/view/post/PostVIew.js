@@ -17,7 +17,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 		//boxready 이거 중요! 
 		boxready : function(obj){
 			Ext.Ajax.request({
-				url : 'http://localhost/board/postView',
+				url : '/board/postView',
 						method : 'POST',
 						params : {
 							post_no : post_no
@@ -25,6 +25,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 						success : function(response){
 							post = Ext.decode(response.responseText).post;
 							commentsList = Ext.decode(response.responseText).commentsList;
+							fileList = Ext.decode(response.responseText).fileList;
 							s_user_id= Ext.decode(response.responseText).s_user_id;
 							console.log("post",post);
 							
@@ -63,6 +64,10 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 									xtype :'panel',
 									html : '조회수 : ' + post.views+"<br><br><br>"
 								},{
+									html : '<h2>첨부파일</h2>'
+								},{
+									id : "fileForm"
+								},{
 									html : '<h2>댓글목록</h2>',
 								},{
 									id : "commentsForm"
@@ -80,7 +85,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 											com_cont = btn.up("viewport").down("#com_cont").value;
 											console.log("com_cont",com_cont);
 											Ext.Ajax.request({
-												url : 'http://localhost/board/insertComment',
+												url : '/board/insertComment',
 												method : "POST",
 												params : {
 													post_no : post_no,
@@ -124,6 +129,33 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 								}
 							}]
 							}));
+							//여서부터 파일처리
+							fileform = page.down("#fileForm");
+							for(idx in fileList){
+								fileform.add(Ext.apply({
+									xtype : 'panel',
+									html : fileList[idx].file_nm,
+									value : fileList[idx].file_no,
+									listeners: {
+										render: function(c) {
+											c.body.on('click', function() {
+											 	window.open('/board/fileDownload?file_no='+fileList[idx].file_no, "_blank");
+											 
+											 
+											});
+										},
+										scope: this
+									}
+//									handler : function(btn){
+//										alert("눌림!");
+//									}
+//							        click:function(){
+//							        	alert("눌림!");
+//							        }
+								
+								}))
+							}
+							
 							
 							//여서부터 댓글처리
 							com = page.down("#commentsForm");
@@ -164,7 +196,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 														return false;
 													}
 													Ext.Ajax.request({
-														url : 'http://localhost/board/deleteComments',
+														url : '/board/deleteComments',
 														method : 'POST',
 														params : {
 															com_no : com_no
@@ -216,7 +248,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 										text : '수정',
 										handler : function(btn){
 											Ext.Ajax.request({
-												url : 'http://localhost/board/updatePost',
+												url : '/board/updatePost',
 												method : 'GET',
 												params : {
 													post_no : post_no
@@ -279,7 +311,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 																			console.log("uploadFile",uploadFile);
 //																			frm.submit({
 																			Ext.Ajax.request({
-																				url: 'http://localhost/board/updatePost',
+																				url: '/board/updatePost',
 																				method : "post",
 																				params : {
 																					post_no : post_no,
@@ -323,7 +355,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 											var delCheck = confirm("정말 삭제하시겠습니까?");
 											if(delCheck == true){
 												Ext.Ajax.request({
-													url : 'http://localhost/board/deletePost',
+													url : '/board/deletePost',
 													method : 'POST',
 													params : {
 														post_no : post_no

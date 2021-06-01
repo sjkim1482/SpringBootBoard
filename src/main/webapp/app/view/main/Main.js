@@ -32,7 +32,7 @@ Ext.define('ExtJSBoard.view.main.Main', {
 			text : '로그아웃',
 			handler : function(btn){
 				Ext.Ajax.request({
-						url : 'http://localhost/board/logout',
+						url : '/board/logout',
 						method : 'POST',
 					
 						success : function(response){
@@ -96,7 +96,7 @@ Ext.define('ExtJSBoard.view.main.Main', {
 				},
 						proxy :{
 							type : 'ajax',
-							url : 'http://localhost/board/selectBoardList',
+							url : '/board/selectBoardList',
 							method : 'GET',
 							reader:{
 								type : 'json',

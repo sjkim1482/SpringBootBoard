@@ -160,5 +160,29 @@ private static final Logger logger = LoggerFactory.getLogger(BoardService.class)
 		// TODO Auto-generated method stub
 		return boardDao.searchPostList(pageVo);
 	}
+
+	@Override
+	public List<BoardVO> boardListView() {
+		// TODO Auto-generated method stub
+		return boardDao.boardListView();
+	}
+
+	@Override
+	public int updateBoard(BoardVO boardVo) {
+		// TODO Auto-generated method stub
+		return boardDao.updateBoard(boardVo);
+	}
+
+	@Override
+	public List<FileVO> selectFileList(int post_no) {
+		// TODO Auto-generated method stub
+		return boardDao.selectFileList(post_no);
+	}
+
+	@Override
+	public FileVO selectFile(int file_no) {
+		// TODO Auto-generated method stub
+		return boardDao.selectFile(file_no);
+	}
 	
 }

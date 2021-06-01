@@ -10,7 +10,6 @@ import java.util.UUID;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +146,7 @@ public class BoardController {
 	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session,MultipartFile uploadFile, HttpServletRequest request, Model model) {
 		System.out.println("게시글 등록진입");
 //		List<MultipartFile> files = fileList.getFiles("uploadFile");
-//		System.out.println(uploadFile.getOriginalFilename());
+		System.out.println(uploadFile.getOriginalFilename());
 		UserVO userVo = (UserVO)(request.getSession().getAttribute("S_USER"));
 		postVo.setUser_id(userVo.getUser_id());
 		logger.debug("================================");
@@ -259,8 +258,8 @@ public class BoardController {
 		}else {
 			map.put("writerCheck", 0);
 		}
-		
-		
+		List<FileVO> fileList = boardService.selectFileList(post_no);
+		map.put("fileList", fileList);
 		
 		
 //		model.addAttribute("post",postVo);
@@ -411,6 +410,37 @@ public class BoardController {
 		
 		return map;
 	}
+	
+	//게시판 조회 관리자용
+	@GetMapping("boardListView")
+	public Map<String, Object> boardListView() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		logger.debug("================================");
+		logger.debug("게시판 전체목록조회 컨트롤러 접속");
+		logger.debug("boardList : {}", boardService.boardListView());
+		logger.debug("================================");
+		map.put("boardList", boardService.boardListView());
+
+		return map;
+	}
+	
+	//게시판 활성, 비활성
+	@PostMapping("updateBoard")
+	public Map<String, Object> updateBoard(BoardVO boardVo){
+		Map<String, Object> map = new HashMap<String, Object>();
+		logger.debug("================================");
+		logger.debug("게시판 활성, 비활성 컨트롤러 접속");
+		logger.debug("boardVo : {}", boardVo);
+		logger.debug("================================");
+		map.put("updateCnt", boardService.updateBoard(boardVo));
+		
+		
+		return map;
+	}
+	
+	
+	
+	
 	
 	
 }

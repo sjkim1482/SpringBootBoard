@@ -14,7 +14,7 @@ Ext.define('ExtJSBoard.view.user.User', {
 		//boxready 이거 중요! 
 		boxready : function(obj){
 			Ext.Ajax.request({
-				url : 'http://localhost/board/selectUserList',
+				url : '/board/selectUserList',
 				method : 'POST',
 				
 				success : function(response){
@@ -61,7 +61,7 @@ Ext.define('ExtJSBoard.view.user.User', {
 		xtype : 'button',
 		text : '엑셀다운로드',
 		handler : function(btn){
-			window.open('http://localhost/board/userListExcel', "_blank");
+			window.open('/board/userListExcel', "_blank");
 
 		}
 	}]

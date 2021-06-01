@@ -27,7 +27,7 @@ Ext.define('ExtJSBoard.view.main.AdminMain', {
 			text : '로그아웃',
 			handler : function(btn){
 				Ext.Ajax.request({
-						url : 'http://localhost/board/logout',
+						url : '/board/logout',
 						method : 'POST',
 					
 						success : function(response){

@@ -14,9 +14,17 @@ public class PostVO {
 	private String user_id;
 	private int pre_post_no;
 	private int rn;
+	private int postLevel;
 	
 	
 	
+	
+	public int getPostLevel() {
+		return postLevel;
+	}
+	public void setPostLevel(int postLevel) {
+		this.postLevel = postLevel;
+	}
 	public int getRn() {
 		return rn;
 	}
