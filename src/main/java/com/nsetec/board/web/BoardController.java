@@ -45,16 +45,12 @@ public class BoardController {
 	//시큐리티 pw암호화
 	@Autowired
 	BCryptPasswordEncoder pwdEncode;
-	//시큐리티
+	//시큐리티 bean등록
 	@Bean
 	public BCryptPasswordEncoder getPwdEncode() {
 		return new BCryptPasswordEncoder();
 	}
-	//model=>json
-//	@Bean
-//	MappingJackson2JsonView jsonView() {
-//		return new MappingJackson2JsonView();
-//	}
+
 	
 	@Autowired
 	private BoardService boardService;
@@ -69,23 +65,18 @@ public class BoardController {
 		if(dbUser != null) {
 			pwdMatch = pwdEncode.matches(userVo.getPass(), dbUser.getPass());
 		}
-		System.out.println(pwdMatch);
 		logger.debug("================================");
 		logger.debug("로그인 컨트롤러 접속");
 		logger.debug("userVo : {}", userVo );
 		logger.debug("================================");
-//		int check = boardService.checkLogin(userVo);
 		Map<String, Object> map = new HashMap<String, Object>();
 		int check = 0;
 		if(dbUser != null && pwdMatch == true) {
 			
 			check = 1;
-//			UserVO joinUserVo = boardService.selectUser(userVo.getUser_id());
 			session.setAttribute("S_USER", dbUser);
 			map.put("userVo", dbUser);
-//			model.addAttribute("userVo", dbUser);
 		}
-//		model.addAttribute("check", check);
 		map.put("check", check);
 		return map;
 	}
@@ -121,7 +112,6 @@ public class BoardController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int insertCnt = boardService.insertBoard(boardVo);
 		map.put("insertCnt", insertCnt);
-//		model.addAttribute("insertCnt", insertCnt);
 		
 		return map;
 	}
@@ -140,13 +130,15 @@ public class BoardController {
 		
 		return map;
 	}
-	//MultipartHttpServletRequest fileList
 	//게시글 등록
 	@PostMapping(path = "insertPost")
-	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session,MultipartFile uploadFile, HttpServletRequest request, Model model) {
-		System.out.println("게시글 등록진입");
-//		List<MultipartFile> files = fileList.getFiles("uploadFile");
-		System.out.println(uploadFile.getOriginalFilename());
+	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session, MultipartHttpServletRequest files,  HttpServletRequest request) {
+//	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session,MultipartFile uploadFile, MultipartHttpServletRequest files,  HttpServletRequest request, Model model) {
+		
+		//Ajax로 파일 전송시 MultipartHttpServletRequest files가 널로 뜸
+		List<MultipartFile> fileList = files.getFiles("uploadFile");
+		MultipartFile uploadFile = fileList.get(0);
+		// 세션에 저장된 로그인한 사용자정보를 받아와서 게시글작성자의 아이디로 등록 
 		UserVO userVo = (UserVO)(request.getSession().getAttribute("S_USER"));
 		postVo.setUser_id(userVo.getUser_id());
 		logger.debug("================================");
@@ -156,49 +148,46 @@ public class BoardController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int insertCnt = boardService.insertPost(postVo);
 		map.put("insertCnt", insertCnt);
-		model.addAttribute("insertCnt", insertCnt);
 		
 		
-		String filename = "";
 		//파일등록
+		String filename = "";
 		FileVO attFileVo = new FileVO();
 		int max_post_no = boardService.maxPostno();
 		map.put("max_post_no", max_post_no);
 		attFileVo.setPost_no(max_post_no);
 		if(insertCnt == 1) {
 			if(uploadFile!=null) {
-			
-					if(!("".equals(uploadFile.getOriginalFilename()))) {
-						try {
-							String uploadPath = "d:" + File.separator + "uploadFile/";
-							
-							File uploadDir = new File(uploadPath);
-							
-							if(!uploadDir.exists()) {
-								uploadDir.mkdirs();
-							}
-							String fileExtension = FileUtil.getFileExtension(uploadFile.getOriginalFilename());
-							String realfilename = uploadPath + UUID.randomUUID().toString()+fileExtension;
-							filename = uploadFile.getOriginalFilename();
-							
-							uploadFile.transferTo(new File(realfilename));
-							
-							attFileVo.setFile_nm(filename);
-							attFileVo.setFile_route(realfilename);
-							
-							
-							boardService.insertFile(attFileVo);
-							
-						} catch (IllegalStateException | IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+				if(!("".equals(uploadFile.getOriginalFilename()))) {
+					try {
+						String uploadPath = "d:" + File.separator + "uploadFile/";
+						
+						File uploadDir = new File(uploadPath);
+						
+						if(!uploadDir.exists()) {
+							uploadDir.mkdirs();
 						}
+						String fileExtension = FileUtil.getFileExtension(uploadFile.getOriginalFilename());
+						String realfilename = uploadPath + UUID.randomUUID().toString()+fileExtension;
+						filename = uploadFile.getOriginalFilename();
+						
+						uploadFile.transferTo(new File(realfilename));
+						
+						attFileVo.setFile_nm(filename);
+						attFileVo.setFile_route(realfilename);
+						
+						
+						boardService.insertFile(attFileVo);
+						
+					} catch (IllegalStateException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				
+				}
+			
 			}
 		}
-		
-		
+		map.put("success", true);
 		
 		
 		
@@ -261,15 +250,7 @@ public class BoardController {
 		List<FileVO> fileList = boardService.selectFileList(post_no);
 		map.put("fileList", fileList);
 		
-		
-//		model.addAttribute("post",postVo);
-//			UserVO userVo = (UserVO)request.getSession().getAttribute("S_USER");
-//			int writer = 0;
-//			if(postVo.getUser_id().equals(userVo.getUser_id())) {
-//				writer = 1;
-//			}
-//			model.addAttribute("writer",writer);
-		
+
 		return map;
 	}
 	
@@ -287,7 +268,6 @@ public class BoardController {
 		map.put("insertCnt", insertCnt);
 		int max_post_no = boardService.maxPostno();
 		map.put("max_post_no", max_post_no);
-//		model.addAttribute("insertCnt", insertCnt);
 		
 		return map;
 	}
@@ -306,7 +286,6 @@ public class BoardController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int insertCnt = boardService.registUser(userVo);
 		map.put("insertCnt", insertCnt);
-//		model.addAttribute("insertCnt", insertCnt);
 		
 		return map;
 	}
@@ -321,12 +300,11 @@ public class BoardController {
 		logger.debug("================================");
 		Map<String, Object> map = new HashMap<String, Object>();
 		int check = boardService.checkUserId(user_id);
-		map.put("check", check);
-//		model.addAttribute("check", boardService.checkUserId(user_id));
-		
+		map.put("check", check);		
 		return map;
 	}
 	
+	//게시글 삭제
 	@PostMapping(path = "deletePost")
 	public Map<String, Object> deletePost(int post_no){
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -341,6 +319,8 @@ public class BoardController {
 		return map;
 	}
 	
+	
+	// 게시글 수정폼 불러오기
 	@GetMapping(path = "updatePost")
 	public Map<String,Object> updatePost(int post_no){
 		Map<String,Object> map = new HashMap<String, Object>();
@@ -355,6 +335,7 @@ public class BoardController {
 		return map;
 	}
 	
+	// 게시글 수정
 	@PostMapping(path = "updatePost")
 	public Map<String,Object> updatePost(PostVO postVo,HttpSession session,MultipartFile uploadFile, HttpServletRequest request){
 		Map<String,Object> map = new HashMap<String, Object>();
@@ -369,6 +350,7 @@ public class BoardController {
 		return map;
 	}
 	
+	// 댓글 등록
 	@PostMapping(path = "insertComment")
 	public Map<String,Object> insertComment(CommentsVO commentsVO,HttpSession session, HttpServletRequest request){
 		Map<String,Object> map = new HashMap<String, Object>();
@@ -383,6 +365,7 @@ public class BoardController {
 		return map;
 	}
 	
+	//댓글 삭제
 	@PostMapping(path = "deleteComments")
 	public Map<String,Object> deleteComment(int com_no){
 		Map<String,Object> map = new HashMap<String, Object>();
@@ -397,20 +380,7 @@ public class BoardController {
 		return map;
 	}
 	
-	@GetMapping(path = "searchPostList")
-	public Map<String,Object> searchPostList(PageVo pageVo){
-		Map<String,Object> map = new HashMap<String, Object>();
-		
-		logger.debug("================================");
-		logger.debug("게시글 조건검색 컨트롤러 접속");
-		logger.debug("pageVo : {}", pageVo);
-		logger.debug("================================");
-		map.put("postList", boardService.searchPostList(pageVo));
-		
-		
-		return map;
-	}
-	
+
 	//게시판 조회 관리자용
 	@GetMapping("boardListView")
 	public Map<String, Object> boardListView() {
