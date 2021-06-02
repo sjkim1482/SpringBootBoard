@@ -44,6 +44,8 @@ Ext.define('ExtJSBoard.view.main.Main', {
 //								if(maindata == null){
 //									maindata = btn.up("container[name=mainView]");
 //								}
+//								btn.up("container").up("container").up("Ext").removeAll();
+//								btn.up("container[name=mainView1]").down("container[region=center]").removeAll(true);
 								btn.up("container[name=mainView1]").removeAll();
 								Ext.widget("login");
 							}else{

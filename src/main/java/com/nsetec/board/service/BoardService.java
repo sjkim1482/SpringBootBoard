@@ -184,5 +184,11 @@ private static final Logger logger = LoggerFactory.getLogger(BoardService.class)
 		// TODO Auto-generated method stub
 		return boardDao.selectFile(file_no);
 	}
+
+	@Override
+	public int deleteFile(int file_no) {
+		// TODO Auto-generated method stub
+		return boardDao.deleteFile(file_no);
+	}
 	
 }

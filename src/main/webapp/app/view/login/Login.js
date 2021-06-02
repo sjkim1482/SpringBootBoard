@@ -9,6 +9,7 @@ flag = false;
 Ext.define('ExtJSBoard.view.login.Login', {
     extend: 'Ext.window.Window',
     xtype: 'login',
+    id : 'login',
     width : 500,
     height : 400,
     layout : 'center',

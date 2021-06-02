@@ -7,7 +7,7 @@ Ext.define('ExtJSBoard.Application', {
     extend: 'Ext.app.Application',
 	
 	xtype : 'ExtJSBoard',
-	
+	id : 'ExtJSBoard',
     name: 'ExtJSBoard',
 	
     quickTips: false,

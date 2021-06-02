@@ -41,6 +41,8 @@ Ext.define('ExtJSBoard.view.post.Post', {
 
 					var result = Ext.decode(response.responseText);
 					var pageVo = Ext.decode(response.responseText).pageVo;
+					
+					console.log("page_no",pageVo.page);
 					console.log("S",result);
 					console.log("success", Ext.decode(response.responseText).postList);
 					var store = obj.getStore();
@@ -74,11 +76,30 @@ Ext.define('ExtJSBoard.view.post.Post', {
 					
 					
 					var pagination = Ext.decode(response.responseText).pagination;
-				
-					page.add(Ext.apply({
+					
+					if(pageVo.page!=1){
+						page.add(Ext.apply({
+							xtype : 'button',
+							text : "<",
+							name : 1,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+						}));
+					}
+					
+					for(let i = 1; i<=pagination; i++){
+						if(pageVo.page == i){
+							page.add(Ext.apply({
 								xtype : 'button',
-								text : "<",
-								name : 1,
+								text : i,
+								name : i,
+								disabled : true,
 								handler : function(btn){
 									var page = btn.up("viewport").down("component[region=center]");
 									page_no = btn.name;
@@ -87,11 +108,9 @@ Ext.define('ExtJSBoard.view.post.Post', {
 										xtype: 'postList'
 									}));
 								}
-						}));
-					
-					
-					for(let i = 1; i<=pagination; i++){
-						page.add(Ext.apply({
+							}));
+						}else{
+							page.add(Ext.apply({
 								xtype : 'button',
 								text : i,
 								name : i,
@@ -103,23 +122,25 @@ Ext.define('ExtJSBoard.view.post.Post', {
 										xtype: 'postList'
 									}));
 								}
+							}));
+						}
+						
+					}
+					if(pageVo.page!=pagination){
+						page.add(Ext.apply({
+							xtype : 'button',
+							text : ">",
+							name : pagination,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
 						}));
 					}
-					
-					page.add(Ext.apply({
-								xtype : 'button',
-								text : ">",
-								name : pagination,
-								handler : function(btn){
-									var page = btn.up("viewport").down("component[region=center]");
-									page_no = btn.name;
-									page.removeAll(true);
-									page.add(Ext.apply({
-										xtype: 'postList'
-									}));
-								}
-						}));
-					
 //					obj.down("panel").update(result.empCnt);
 				},
 				failure : function(response){
@@ -222,10 +243,23 @@ Ext.define('ExtJSBoard.view.post.Post', {
 				['10개씩보기','10'],
 				['15개씩보기','15'],
 				['20개씩보기','20']
-			]
-			
-		})
+			],
+			renderTo: document.body,
+				listeners: {
+                change: function(fld, oldValue, newValue, eOpts) {
+                	var page = fld.up("viewport").down("component[region=center]");
+					pageSizeStr = newValue;
+					alert(pageSizeStr)
+					page.removeAll(true);
+					page.add(Ext.apply({
+						xtype: 'postList'
+					}));
+                }
+            }
 		
+			
+		}),
+	
 	},{
 		xtype : 'combo',
 		id : 'searchCheck',

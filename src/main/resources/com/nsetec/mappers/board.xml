@@ -322,7 +322,7 @@
 		,del_code
 		,post_no
 		FROM attach_file
-		WHERE post_no = #{post_no}
+		WHERE post_no = #{post_no} AND del_code = 1
 	</select>
 	
 	<!-- 첨부파일 개별조회 -->
@@ -336,6 +336,12 @@
 		FROM attach_file
 		WHERE file_no = #{file_no}
 	</select>
+	
+	<!-- 파일 삭제 -->
+	<update id="deleteFile" parameterType="int">
+		UPDATE attach_file SET del_code = 0
+		WHERE file_no = #{file_no}
+	</update>
 	
 
 	<!-- 게시글 조건검색 -->

@@ -133,11 +133,9 @@ public class BoardController {
 	//게시글 등록
 	@PostMapping(path = "insertPost")
 	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session, MultipartHttpServletRequest files,  HttpServletRequest request) {
-//	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session,MultipartFile uploadFile, MultipartHttpServletRequest files,  HttpServletRequest request, Model model) {
-		
-		//Ajax로 파일 전송시 MultipartHttpServletRequest files가 널로 뜸
+	
 		List<MultipartFile> fileList = files.getFiles("uploadFile");
-		MultipartFile uploadFile = fileList.get(0);
+		
 		// 세션에 저장된 로그인한 사용자정보를 받아와서 게시글작성자의 아이디로 등록 
 		UserVO userVo = (UserVO)(request.getSession().getAttribute("S_USER"));
 		postVo.setUser_id(userVo.getUser_id());
@@ -157,31 +155,37 @@ public class BoardController {
 		map.put("max_post_no", max_post_no);
 		attFileVo.setPost_no(max_post_no);
 		if(insertCnt == 1) {
-			if(uploadFile!=null) {
-				if(!("".equals(uploadFile.getOriginalFilename()))) {
-					try {
-						String uploadPath = "d:" + File.separator + "uploadFile/";
-						
-						File uploadDir = new File(uploadPath);
-						
-						if(!uploadDir.exists()) {
-							uploadDir.mkdirs();
+			if(fileList!=null) {
+				for(int i = 0; i<fileList.size(); i++) {
+					MultipartFile uploadFile = fileList.get(i);
+					if(uploadFile!=null) {
+						if(!("".equals(uploadFile.getOriginalFilename()))) {
+							try {
+								String uploadPath = "d:" + File.separator + "uploadFile/";
+								
+								File uploadDir = new File(uploadPath);
+								
+								if(!uploadDir.exists()) {
+									uploadDir.mkdirs();
+								}
+								String fileExtension = FileUtil.getFileExtension(uploadFile.getOriginalFilename());
+								String realfilename = uploadPath + UUID.randomUUID().toString()+fileExtension;
+								filename = uploadFile.getOriginalFilename();
+								
+								uploadFile.transferTo(new File(realfilename));
+								
+								attFileVo.setFile_nm(filename);
+								attFileVo.setFile_route(realfilename);
+								
+								
+								boardService.insertFile(attFileVo);
+								
+							} catch (IllegalStateException | IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
-						String fileExtension = FileUtil.getFileExtension(uploadFile.getOriginalFilename());
-						String realfilename = uploadPath + UUID.randomUUID().toString()+fileExtension;
-						filename = uploadFile.getOriginalFilename();
-						
-						uploadFile.transferTo(new File(realfilename));
-						
-						attFileVo.setFile_nm(filename);
-						attFileVo.setFile_route(realfilename);
-						
-						
-						boardService.insertFile(attFileVo);
-						
-					} catch (IllegalStateException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					
 					}
 				}
 			
@@ -330,23 +334,70 @@ public class BoardController {
 		logger.debug("post_no : {}", post_no);
 		logger.debug("================================");
 		map.put("post", boardService.postView(post_no));
-		
+		List<FileVO> fileList = boardService.selectFileList(post_no);
+		map.put("fileList", fileList);
 		
 		return map;
 	}
 	
 	// 게시글 수정
 	@PostMapping(path = "updatePost")
-	public Map<String,Object> updatePost(PostVO postVo,HttpSession session,MultipartFile uploadFile, HttpServletRequest request){
+	public Map<String,Object> updatePost(PostVO postVo,HttpSession session, MultipartHttpServletRequest files,  HttpServletRequest request){
 		Map<String,Object> map = new HashMap<String, Object>();
-		
+		List<MultipartFile> fileList = files.getFiles("uploadFile");
 		logger.debug("================================");
 		logger.debug("게시글 수정(POST) 컨트롤러 접속");
 		logger.debug("postVo : {}", postVo);
 		logger.debug("================================");
-		map.put("updateCnt", boardService.updatePost(postVo));
+		int updateCnt = boardService.updatePost(postVo);
+		map.put("updateCnt", updateCnt);
 		
 		
+		//파일등록
+		String filename = "";
+		FileVO attFileVo = new FileVO();
+		int post_no = postVo.getPost_no();
+		map.put("post_no", post_no);
+		attFileVo.setPost_no(post_no);
+		if(updateCnt == 1) {
+			if(fileList!=null) {
+				for(int i = 0; i<fileList.size(); i++) {
+					MultipartFile uploadFile = fileList.get(i);
+					if(uploadFile!=null) {
+						if(!("".equals(uploadFile.getOriginalFilename()))) {
+							try {
+								String uploadPath = "d:" + File.separator + "uploadFile/";
+								
+								File uploadDir = new File(uploadPath);
+								
+								if(!uploadDir.exists()) {
+									uploadDir.mkdirs();
+								}
+								String fileExtension = FileUtil.getFileExtension(uploadFile.getOriginalFilename());
+								String realfilename = uploadPath + UUID.randomUUID().toString()+fileExtension;
+								filename = uploadFile.getOriginalFilename();
+								
+								uploadFile.transferTo(new File(realfilename));
+								
+								attFileVo.setFile_nm(filename);
+								attFileVo.setFile_route(realfilename);
+								
+								
+								boardService.insertFile(attFileVo);
+								
+							} catch (IllegalStateException | IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					
+					}
+				}
+			
+			}
+		}
+		
+		map.put("success", true);
 		return map;
 	}
 	
@@ -408,6 +459,21 @@ public class BoardController {
 		return map;
 	}
 	
+	//파일 삭제
+	@PostMapping("deleteFile")
+	public Map<String, Object> deleteFile(int file_no) {
+		Map<String, Object> map = new HashMap<String, Object>();
+	
+		logger.debug("================================");
+		logger.debug("파일삭제 컨트롤러 접속");
+		logger.debug("file_no : {}", file_no);
+		logger.debug("================================");		
+		int deleteCnt = boardService.deleteFile(file_no);
+		
+		map.put("deleteCnt", deleteCnt);
+		
+		return map;
+	}
 	
 	
 	

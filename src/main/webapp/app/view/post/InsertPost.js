@@ -25,10 +25,19 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 	}, {
 		xtype: 'filefield',
 		//라벨 정의
+		multiple: 'multiple',
 		fieldLabel: '파일첨부',
 		buttonText: '찾아보기',
 		//<input type="file" name="fileupload"> 와 동일하게 서버에서 받기위한 name명이 uploadFile
 		name: 'uploadFile',
+		listeners: {
+			afterrender: function(fileObj) {
+				//파일태그옵션에 multiple이라는 옵션을 정의 
+				fileObj.fileInputEl.set({
+					multiple: 'multiple'
+				});
+			},
+		}
 
 	}],
 	fbar: [{
@@ -36,9 +45,11 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 		text: '등록',
 		
 		
+	
 		//게시판등록(제목, 내용, 파일 처리)
 		
 		handler: function(btn) {
+			
 			//id가 insertPostForm인 form의 정보를가져옴
 			var frm = btn.up("#insertPostForm").getForm();
 			console.log("frm", frm)

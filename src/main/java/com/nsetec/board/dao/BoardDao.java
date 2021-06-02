@@ -179,6 +179,12 @@ public class BoardDao implements BoardDaoI {
 		// TODO Auto-generated method stub
 		return template.selectOne("board.selectFile",file_no);
 	}
+
+	@Override
+	public int deleteFile(int file_no) {
+		// TODO Auto-generated method stub
+		return template.update("board.deleteFile", file_no);
+	}
 	
 	
 }

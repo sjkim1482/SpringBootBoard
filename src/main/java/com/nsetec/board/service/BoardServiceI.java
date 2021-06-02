@@ -58,5 +58,6 @@ public interface BoardServiceI {
 	List<FileVO> selectFileList(int post_no);
 	//첨부파일 개별조회
 	FileVO selectFile(int file_no);
-	
+	//수정 파일삭제
+	int deleteFile(int file_no);
 }
