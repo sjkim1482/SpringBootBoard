@@ -198,33 +198,20 @@ Ext.define('ExtJSBoard.view.login.Login', {
 					name : 'age'
 				},{
 					xtype: 'radiogroup',
-					id:'radiogroup'
-					 ,layout: 'table'
-		    	    ,layoutConfig: {
-		            columns: 2
-			        }
-			        ,anchor: '100%'
-			        ,defaults: {
-			            border: true
-			            //,layout: 'form'
-			            //,labelWidth: 15
-			            ,style: {
-			                marginTop: '5px'
-			                ,paddingRight: '10px'
-			            }
-			        },
+					id:'radiogroup1',
+					layout: 'table',
 			        items : [{
 							xtype : 'radiofield',
 							fieldLabel : '성별',
 							boxLabel : '남성',
 							name : 'gender',
-							inputValue : '남성'
+							value : '남성'
 						},{
 						//라디오 버튼 
 							xtype : 'radiofield',
 							name : "gender",
 							boxLabel : '여성',
-							inputValue : '여성'
+							value : '여성'
 						}]
 			        
 				},{
@@ -237,14 +224,14 @@ Ext.define('ExtJSBoard.view.login.Login', {
 						var user_nm = btn.up('window').down("component[name=user_nm]").value;
 						
 						var age = btn.up('window').down("component[name=age]").value;
-						var gender = btn.up('window').down("component[name=gender]").boxLabel;
-//						console.log("라디오",Ext.getCmp('radiogroup').getChecked().getInputValue());
+						var gender = btn.up('window').down("#radiogroup1").getChecked()[0].boxLabel;
+//						console.log("라디오",Ext.getCmp('radiogroup1').getValue().gender);
+						console.log("라디오",gender);
 //						var gender = Ext.getCmp('radiogroup').getChecked().value;
 //						alert(user_id );
 //						alert(pass);
 //						alert(age);
 //						alert(gender);
-						
 						if(flag == false){
 							alert("아이디 중복검사를 확인하세요");
 							return true;
@@ -272,6 +259,7 @@ Ext.define('ExtJSBoard.view.login.Login', {
 								console.log("check",check);
 								if(check == 1 ){			
 									alert("회원가입에 성공했습니다.");
+									self.close();
 								}else{
 									alert("회원가입 실패");
 								}
