@@ -30,8 +30,10 @@ Ext.define('ExtJSBoard.Application', {
 					Ext.widget("login");
 				}else{
 					if(loginCheck.admin_code==1){
+						admin_flag == 1
 						Ext.widget("adminMain");
 					}else{
+						admin_flag = 0;
 						Ext.widget("main");
 					}
 				}

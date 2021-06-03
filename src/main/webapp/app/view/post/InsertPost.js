@@ -10,7 +10,6 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 	xtype: 'insertPost',
 	id: 'insertPostForm',
 	columnLines: true,
-	title: '게시글 작성',
 	items: [{
 		xtype: 'textfield',
 		fieldLabel: '제목',
@@ -58,7 +57,10 @@ Ext.define('ExtJSBoard.view.post.InsertPost', {
 			console.log(btn.up('form').down("component[name=cont]"));
 			// 입력한 내용을 변수에 담아줌
 			var cont = btn.up('form').down("component[name=cont]").value;
-			
+			if(title == ""){
+				alert("제목은 필수입력 사항입니다.");
+				return false;
+			}
 			
 			//submit 처리 시작
 			frm.submit({

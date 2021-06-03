@@ -57,6 +57,7 @@ Ext.define('ExtJSBoard.view.login.Login', {
 						pass : pass
 					},
 					success : function(response){
+						login_flag = true;
 						console.log(Ext.decode(response.responseText));
 						var check = Ext.decode(response.responseText).check;
 						var userVo = Ext.decode(response.responseText).userVo;
@@ -65,8 +66,10 @@ Ext.define('ExtJSBoard.view.login.Login', {
 							btn.up("window").close();
 //							alert(userVo.admin_code);
 							if(userVo.admin_code==1){
+								admin_flag = 1;
 								Ext.widget("adminMain");			
 							}else{
+								admin_flag = 0;
 								Ext.widget("main");
 							}
 						}else{

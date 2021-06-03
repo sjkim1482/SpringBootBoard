@@ -10,6 +10,7 @@
 //    for (var i = 0 ; i < 10 ; i++) {
 //        r.push(i);
 //    }
+var admin_flag = 1
 Ext.define('ExtJSBoard.view.main.AdminMain', {
     extend: 'Ext.container.Viewport',
     xtype: 'adminMain',
@@ -34,9 +35,11 @@ Ext.define('ExtJSBoard.view.main.AdminMain', {
 							var logoutCheck = Ext.decode(response.responseText).logoutCheck;
 							console.log("logoutCheck",logoutCheck);
 							if(logoutCheck == 1){
+								admin_flag = 0;
+								login_flag = false;
 								btn.up("adminMain").removeAll();
 								Ext.widget("login");
-								return false;
+//								login_flag = true;
 							}else{
 								alert("로그아웃 오류");
 							}
@@ -45,6 +48,14 @@ Ext.define('ExtJSBoard.view.main.AdminMain', {
 							console.log(response);
 						}
 					});
+			}
+		},{
+			xtype : 'button',
+			text : '게시판 페이지 이동',
+			handler : function(btn){
+				admin_flag = 0;
+				btn.up("adminMain").removeAll();
+				Ext.widget("main");
 			}
 		}]
 	},{
@@ -60,11 +71,15 @@ Ext.define('ExtJSBoard.view.main.AdminMain', {
 			xtype : 'treelist',
 			listeners : {
 				selectionchange : function(obj, record){
-					var centerPage = obj.up("viewport").down("component[region=center]");
-					centerPage.removeAll(true);
-					centerPage.add({
-						xtype : record.get("page")
-					})
+					if(admin_flag == 1){
+						if(login_flag){
+							var centerPage = obj.up("viewport").down("component[region=center]");
+							centerPage.removeAll(true);
+							centerPage.add({
+								xtype : record.get("page")
+							})
+						}
+					}
 //					console.log(record.get("page"));
 				}
 			},

@@ -2,6 +2,7 @@ package com.nsetec.board.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,9 +245,10 @@ public class BoardController {
 		map.put("commentsList", commentsList);
 		String user_id = postVo.getUser_id();
 		String s_user_id =  ((UserVO)request.getSession().getAttribute("S_USER")).getUser_id();
+		int admin_code =  ((UserVO)request.getSession().getAttribute("S_USER")).getAdmin_code();
 		map.put("s_user_id", s_user_id);
 		
-		if(user_id.equals(s_user_id)) {
+		if(user_id.equals(s_user_id)||admin_code==1) {
 			map.put("writerCheck", 1);
 		}else {
 			map.put("writerCheck", 0);
@@ -260,7 +262,9 @@ public class BoardController {
 	
 	//답글 등록
 	@PostMapping(path = "insertReply")
-	public Map<String, Object> insertReply(PostVO postVo,HttpSession session, HttpServletRequest request, Model model) {
+	public Map<String, Object> insertReply(PostVO postVo,HttpSession session, MultipartHttpServletRequest files, HttpServletRequest request) {
+		List<MultipartFile> fileList = files.getFiles("uploadFile");
+		
 		UserVO userVo = (UserVO)(request.getSession().getAttribute("S_USER"));
 		postVo.setUser_id(userVo.getUser_id());
 		logger.debug("================================");
@@ -272,7 +276,47 @@ public class BoardController {
 		map.put("insertCnt", insertCnt);
 		int max_post_no = boardService.maxPostno();
 		map.put("max_post_no", max_post_no);
-		
+		String filename = "";
+		FileVO attFileVo = new FileVO();
+		attFileVo.setPost_no(max_post_no);
+		if(insertCnt == 1) {
+			if(fileList!=null) {
+				for(int i = 0; i<fileList.size(); i++) {
+					MultipartFile uploadFile = fileList.get(i);
+					if(uploadFile!=null) {
+						if(!("".equals(uploadFile.getOriginalFilename()))) {
+							try {
+								String uploadPath = "d:" + File.separator + "uploadFile/";
+								
+								File uploadDir = new File(uploadPath);
+								
+								if(!uploadDir.exists()) {
+									uploadDir.mkdirs();
+								}
+								String fileExtension = FileUtil.getFileExtension(uploadFile.getOriginalFilename());
+								String realfilename = uploadPath + UUID.randomUUID().toString()+fileExtension;
+								filename = uploadFile.getOriginalFilename();
+								
+								uploadFile.transferTo(new File(realfilename));
+								
+								attFileVo.setFile_nm(filename);
+								attFileVo.setFile_route(realfilename);
+								
+								
+								boardService.insertFile(attFileVo);
+								
+							} catch (IllegalStateException | IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					
+					}
+				}
+			
+			}
+		}
+		map.put("success", true);
 		return map;
 	}
 	
@@ -475,6 +519,16 @@ public class BoardController {
 		return map;
 	}
 	
+	//관리자 체크
+	@PostMapping("adminCheck")
+	public Map<String, Object> adminCheck(HttpServletRequest req){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("admin_code",((UserVO)req.getSession().getAttribute("S_USER")).getAdmin_code());
+		
+		
+		
+		return map;
+	}
 	
 	
 	

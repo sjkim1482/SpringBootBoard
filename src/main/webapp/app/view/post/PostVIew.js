@@ -11,7 +11,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 
 	extend: 'Ext.grid.Panel',
 	xtype: 'postView',
-	title: '게시판',
+//	title: '게시판',
 	columnLines: true,
 	listeners: {
 		//boxready 이거 중요! 
@@ -41,7 +41,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 					page.removeAll(true);
 					page.add(Ext.apply({
 						extend: 'Ext.panel.Panel',
-						title: post.title,
+//						title: post.title,
 						columnLines: true,
 						items: [{
 							id: 'post_no',
@@ -53,16 +53,19 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 
 						}, {
 							xtype: 'panel',
+							html: '<h1>'+post.title+'</h1> ' + "<br><br>"
+						}, {
+							xtype: 'panel',
 							html: '<h2>내용</h2> ' + post.cont + "<br><br><br>"
 						}, {
 							xtype: 'panel',
-							html: '작성자 : ' + post.user_id + '<br><br><br>'
+							html: '<b>작성자</b> : ' + post.user_id + '<br><br><br>'
 						}, {
 							xtype: 'panel',
-							html: '작성일 : ' + '[' + writeDate + ']<br><br><br>'
+							html: '<b>작성일</b> : ' + '[' + writeDate + ']<br><br><br>'
 						}, {
 							xtype: 'panel',
-							html: '조회수 : ' + post.views + "<br><br><br>"
+							html: '<b>조회수</b> : ' + post.views + "<br><br><br>"
 						}, {
 							html: '<h2>첨부파일</h2>'
 						}, {
@@ -205,7 +208,7 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 									layout: 'table',
 									items: [{
 										xtype: "panel",
-										html: commentsList[idx].com_cont + "&nbsp;&nbsp;&nbsp;&nbsp;[" + writeDate + " / " + commentsList[idx].user_id + "]&nbsp;&nbsp;&nbsp;&nbsp;",
+										html: commentsList[idx].com_cont + "&nbsp;&nbsp;&nbsp;&nbsp;[ " + commentsList[idx].user_id + " / " + writeDate + " ]&nbsp;&nbsp;&nbsp;&nbsp;<br>",
 										name: "com_no",
 										value: commentsList[idx].com_no
 									}, {
@@ -286,7 +289,6 @@ Ext.define('ExtJSBoard.view.post.PostView', {
 												//															extend: 'Ext.form.Panel',
 												xtype: 'form',
 												columnLines: true,
-												title: '게시글 수정',
 												items: [{
 													xtype: 'textfield',
 													fieldLabel: '제목',

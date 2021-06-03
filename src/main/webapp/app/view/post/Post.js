@@ -12,7 +12,8 @@ Ext.define('ExtJSBoard.view.post.Post', {
 	
 	extend: 'Ext.grid.Panel',
     xtype: 'postList',
-    title : '게시판',
+    id : 'postList',
+    title : board_nm,
 	renderTo : Ext.getBody(),
     columnLines : true,
     listeners : {
@@ -38,7 +39,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 				},
 				success : function(response){
 					
-
+					obj.up("viewport").down("component[region=center]").setTitle(board_nm);
 					var result = Ext.decode(response.responseText);
 					var pageVo = Ext.decode(response.responseText).pageVo;
 					
@@ -70,6 +71,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 					var pageSizeCombo = page.down("#pageSize").setValue(pageVo.pageSize);
 					var searchCheckStrCombo = page.down("#searchCheck").setValue(pageVo.searchCheck);
 					var searchStrCombo = page.down("#searchStr").setValue(pageVo.searchStr);
+					var paginationPanel = obj.up("viewport").down("#paginationPanel");
 //					console.log("pageSizeCombo",pageSizeCombo);
 //					console.log("searchCheckStrCombo",searchCheckStrCombo);
 //					console.log("searchStrCombo",searchStrCombo);
@@ -77,8 +79,23 @@ Ext.define('ExtJSBoard.view.post.Post', {
 					
 					var pagination = Ext.decode(response.responseText).pagination;
 					
-					if(pageVo.page!=1){
-						page.add(Ext.apply({
+					if(pageVo.page==1){
+						paginationPanel.add(Ext.apply({
+							xtype : 'button',
+							text : "<",
+							name : 1,
+							disabled : true,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+						}));
+					}else{
+						paginationPanel.add(Ext.apply({
 							xtype : 'button',
 							text : "<",
 							name : 1,
@@ -95,7 +112,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 					
 					for(let i = 1; i<=pagination; i++){
 						if(pageVo.page == i){
-							page.add(Ext.apply({
+							paginationPanel.add(Ext.apply({
 								xtype : 'button',
 								text : i,
 								name : i,
@@ -110,7 +127,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 								}
 							}));
 						}else{
-							page.add(Ext.apply({
+							paginationPanel.add(Ext.apply({
 								xtype : 'button',
 								text : i,
 								name : i,
@@ -126,8 +143,23 @@ Ext.define('ExtJSBoard.view.post.Post', {
 						}
 						
 					}
-					if(pageVo.page!=pagination){
-						page.add(Ext.apply({
+					if(pageVo.page==pagination){
+						paginationPanel.add(Ext.apply({
+							xtype : 'button',
+							text : ">",
+							name : pagination,
+							disabled : true,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+						}));
+					}else{
+						paginationPanel.add(Ext.apply({
 							xtype : 'button',
 							text : ">",
 							name : pagination,
@@ -215,14 +247,20 @@ Ext.define('ExtJSBoard.view.post.Post', {
 		fields : ['post_no','title','user_id','reg_dt','views'],
 		data : []
 	},
-	bbar : []
-	,
+	bbar : [{
+		xtype: 'tbfill'
+	},{
+		xtype : 'panel',
+		id : "paginationPanel"
+	},{
+		xtype: 'tbfill'
+	}],
 	tbar : [{
 		xtype : 'button',
 		text : '게시글 작성',
 		name : board_no,
 		handler : function(btn){
-
+			
 			var page = btn.up("viewport").down("component[region=center]");
 			page.removeAll(true);
 			page.add(Ext.apply({
@@ -283,6 +321,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 		xtype : 'button',
 		text : '검색',
 		handler : function(btn){
+			page_no = 1;
 			pageSizeStr = btn.up("viewport").down("#pageSize").value;
 			searchCheckStr = btn.up("viewport").down("#searchCheck").value;
 			searchStr = btn.up("viewport").down("#searchStr").value;
