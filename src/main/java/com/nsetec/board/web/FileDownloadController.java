@@ -96,7 +96,8 @@ public class FileDownloadController {
 					reFileNm = new String(fileNm.getBytes("UTF-8"), "ISO-8859-1");
 				}
 				if (browser.equals("Safari") || browser.equals("Firefox"))
-					reFileNm = URLDecoder.decode(reFileNm);
+//					reFileNm = URLDecoder.decode(reFileNm);
+					reFileNm = URLDecoder.decode(browser, fileNm);
 			}
 		} catch (Exception e) {
 		}

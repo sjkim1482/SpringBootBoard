@@ -131,6 +131,7 @@ public class BoardController {
 		
 		return map;
 	}
+	
 	//게시글 등록
 	@PostMapping(path = "insertPost")
 	public synchronized Map<String, Object> insertPost(PostVO postVo,HttpSession session, MultipartHttpServletRequest files,  HttpServletRequest request) {
@@ -262,7 +263,7 @@ public class BoardController {
 	
 	//답글 등록
 	@PostMapping(path = "insertReply")
-	public Map<String, Object> insertReply(PostVO postVo,HttpSession session, MultipartHttpServletRequest files, HttpServletRequest request) {
+	public synchronized Map<String, Object> insertReply(PostVO postVo,HttpSession session, MultipartHttpServletRequest files, HttpServletRequest request) {
 		List<MultipartFile> fileList = files.getFiles("uploadFile");
 		
 		UserVO userVo = (UserVO)(request.getSession().getAttribute("S_USER"));

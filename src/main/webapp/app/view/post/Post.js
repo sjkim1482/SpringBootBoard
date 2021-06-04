@@ -75,7 +75,8 @@ Ext.define('ExtJSBoard.view.post.Post', {
 //					console.log("pageSizeCombo",pageSizeCombo);
 //					console.log("searchCheckStrCombo",searchCheckStrCombo);
 //					console.log("searchStrCombo",searchStrCombo);
-					
+					var startPage = Ext.decode(response.responseText).startPage;
+					var endPage = Ext.decode(response.responseText).endPage;
 					
 					var pagination = Ext.decode(response.responseText).pagination;
 					
@@ -109,8 +110,43 @@ Ext.define('ExtJSBoard.view.post.Post', {
 							}
 						}));
 					}
+					if(startPage!=1 && startPage != 0){
+						
+						paginationPanel.add(Ext.apply({
+							xtype : 'button',
+							text : '1',
+							name : '1',
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+						}));
+						
+						
+						
+						paginationPanel.add(Ext.apply({
+							xtype : 'button',
+							text : '...',
+							disabled : true,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+						}));
+					}
 					
-					for(let i = 1; i<=pagination; i++){
+					for(let i = startPage; i<=endPage; i++){
+						
+						
+						
 						if(pageVo.page == i){
 							paginationPanel.add(Ext.apply({
 								xtype : 'button',
@@ -143,6 +179,37 @@ Ext.define('ExtJSBoard.view.post.Post', {
 						}
 						
 					}
+					if(endPage != pagination){
+						paginationPanel.add(Ext.apply({
+					
+							xtype : 'button',
+							text : '...',
+							disabled : true,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+						}));
+						paginationPanel.add(Ext.apply({
+							xtype : 'button',
+							text : pagination,
+							name : pagination,
+							handler : function(btn){
+								var page = btn.up("viewport").down("component[region=center]");
+								page_no = btn.name;
+								page.removeAll(true);
+								page.add(Ext.apply({
+									xtype: 'postList'
+								}));
+							}
+							
+						}))
+					}
+					
 					if(pageVo.page==pagination){
 						paginationPanel.add(Ext.apply({
 							xtype : 'button',
@@ -278,6 +345,7 @@ Ext.define('ExtJSBoard.view.post.Post', {
 		store : Ext.create('Ext.data.Store',{
 			fields : ['label','value'],
 			data : [
+				['5개씩보기','5'],
 				['10개씩보기','10'],
 				['15개씩보기','15'],
 				['20개씩보기','20']
