@@ -8,8 +8,7 @@
 	<select id="checkLogin" parameterType="userVo" resultType="int">
 		SELECT COUNT(*) COUNT
 		FROM B_USER
-		WHERE user_id = #{user_id} AND pass =
-		#{pass}
+		WHERE user_id = #{user_id} AND pass = #{pass}
 	</select>
 
 	<!-- 유저 정보 -->
